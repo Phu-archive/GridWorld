@@ -1,5 +1,8 @@
 # Build a game representation from ascii art defined by user.
+from Prefabs import exceptions
 import itertools
+from copy import deepcopy
+import game
 
 class AsciiMapException(Exception):
     pass
@@ -69,4 +72,16 @@ def build_game(ascii_art, objs_info):
     if not all(o in objs_info for o in all_obs):
         raise ObjectInfoException("There is no information for the object.")
 
-    
+    # Rules for dividing the layers.
+    # Static, Interactive - no matter the object created should be in the same layers (layer 0)
+    # Difference Player should have difference layers. (layer 1 onward)
+
+    map_size = (len(ascii_art[0]), len(ascii_art))
+    objs_lookup = dict()
+
+    for y, row in enumerate(ascii_art):
+        for x, obj in enumerate(row):
+            if obj != ' ':
+                objs_lookup[(x, y)] = deepcopy(objs_info[obj])
+
+    return game.Game(objs_lookup, objs_info, map_size)

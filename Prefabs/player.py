@@ -4,9 +4,21 @@ from ..Prefabs import prefab, player, exceptions
 from abc import ABC, abstractmethod
 
 class Player(prefab.Prefab):
+    """
+    Player Abstract Class Used to define player's behavior.
+
+    Attributes -
+        Similar to the Prefab but having
+        game (Game object) - the reference to the game object,
+            can't be used until it is initalized
+
+    Raises -
+        exceptions.NotInitalizedException -
+            Trying to access the _game variable without initilize it.
+            OR Trying to play the game with initilize the game object.
+    """
     def __init__(self, color, size):
         super().__init__(color, size)
-        self._location = None
         self._game = None
 
     @property

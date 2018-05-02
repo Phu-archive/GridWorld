@@ -1,11 +1,11 @@
-# Just an nothing object, that can't walk path.
+# Interactive Class.
 
 from ..Prefabs import prefab
 from abc import ABC, abstractmethod
 
-class Static(prefab.Prefab):
+class Interactive(prefab.Prefab):
     """
-    Static Prefab - Anything that can't be moved, or interact.
+    Anything that can be Touch, Move, Eat. 
     """
     def __init__(self, color, size):
         super().__init__(color, size)

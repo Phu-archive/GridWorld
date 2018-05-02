@@ -14,11 +14,17 @@ class Prefab(ABC):
         color (3 elements tuple of ints) - the RGB code for the color.
             (range is 0-255 not 0-1)
         size (int) - the size of the pixel tile.
+        _location (2 element tuples) - the location of that prefab.
+            It will be initalized while creating the game.
+            You can't accesss it unless it is initalized
 
     Raises:
         TypeError -
             When the color type is not 3 elements integer tuple.
             When size is not int and not positive.
+
+        exceptions.NotInitalizedException-
+            When we try to access the location without initalized it first.
     """
     def __init__(self, color, size):
         self.color = color
