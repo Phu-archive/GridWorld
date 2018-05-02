@@ -68,3 +68,5 @@ def build_game(ascii_art, objs_info):
 
     if not all(o in objs_info for o in all_obs):
         raise ObjectInfoException("There is no information for the object.")
+
+    

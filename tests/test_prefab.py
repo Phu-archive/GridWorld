@@ -128,3 +128,38 @@ def test_create_numpy_tile():
                         [[1, 0, 0], [1, 0.0, 0]]])
 
     assert np.array_equal(p.numpy_tile, tile_numpy_out)
+
+@pytest.fixture()
+def normal_prefab():
+    return prefab.Prefab((255, 0, 0), 2)
+
+@pytest.mark.parametrize("location_input, expect_msg", [
+    ("Blue", "Expect 2 elements tuple - got str"),
+    (102, "Expect 2 elements tuple - got int"),
+    ([1, 2, 3], "Expect 2 elements tuple - got list")
+])
+def test_prefab_wrong_location_type(location_input, expect_msg, normal_prefab):
+    with pytest.raises(TypeError) as execinfo:
+        normal_prefab.location = location_input
+
+    assert expect_msg in str(execinfo.value)
+
+@pytest.mark.parametrize("location_input, expect_msg", [
+    ((1, 2, 3, 4), "Expect 2 elements tuple - got 4 elements tuple"),
+    ((), "Expect 2 elements tuple - got 0 elements tuple")
+])
+def test_prefab_wrong_location_size(location_input, expect_msg, normal_prefab):
+    with pytest.raises(TypeError) as execinfo:
+        normal_prefab.location = location_input
+
+    assert expect_msg in str(execinfo.value)
+
+@pytest.mark.parametrize("location_input, expect_msg", [
+    ((1, "2"), "Expect 2 elements tuple of type int"),
+    ((None, 2), "Expect 2 elements tuple of type int")
+])
+def test_prefab_wrong_location_not_int(location_input, expect_msg, normal_prefab):
+    with pytest.raises(TypeError) as execinfo:
+        normal_prefab.location = location_input
+
+    assert expect_msg in str(execinfo.value)

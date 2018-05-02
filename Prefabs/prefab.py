@@ -4,6 +4,7 @@ from abc import ABC, abstractmethod
 import numpy as np
 
 import matplotlib.pyplot as plt
+from ..Prefabs import exceptions
 
 class Prefab(ABC):
     """
@@ -22,6 +23,49 @@ class Prefab(ABC):
     def __init__(self, color, size):
         self.color = color
         self.size = size
+        self._location = None
+
+    @property
+    def location(self):
+        """
+        Get the location of the player.
+        Noted that it will in initilized when create the map
+
+        Return
+            1. location (2 elements tuple) - the location of the player.
+        """
+        if self._location is None:
+            raise exceptions.NotInitalizedException("Location haven't been initilized")
+
+        return self._location
+
+    @location.setter
+    def location(self, value):
+        """
+        Set the location of the player.
+        Noted that it will in initilized when create the map
+
+        Args:
+            1. value (2 elements tuple) - the location of the player.
+
+        Raises:
+            TypeError - When the value contains non-integer values or
+                the size of the tuple is not 2
+        """
+
+        # Similar to prefab
+        if not isinstance(value, tuple):
+            raise TypeError("Expect 2 elements tuple - got " +
+                                    value.__class__.__name__)
+        else:
+            if len(value) != 2:
+                raise TypeError("Expect 2 elements tuple - got " +
+                                    str(len(value)) + " elements tuple.")
+            elif not all(isinstance(c, int) for c in value):
+                raise TypeError("Expect 2 elements tuple of type int")
+
+        self._location = value
+
 
     @property
     def color(self):
