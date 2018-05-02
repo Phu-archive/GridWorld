@@ -9,7 +9,7 @@ import numpy as np
 
 @pytest.fixture()
 def normal_player():
-    return player.NormalPlayer((255, 0, 0), 2)
+    return player.NormalPlayer((255, 0, 0))
 
 class GameMock:
     """Simple Game Mock Testing How the method calls"""

@@ -17,8 +17,8 @@ class Player(prefab.Prefab):
             Trying to access the _game variable without initilize it.
             OR Trying to play the game with initilize the game object.
     """
-    def __init__(self, color, size):
-        super().__init__(color, size)
+    def __init__(self, color):
+        super().__init__(color)
         self._game = None
 
     @property
@@ -85,8 +85,8 @@ class Player(prefab.Prefab):
         self.location = self.game.move_west(self.location)
 
 class NormalPlayer(Player):
-    def __init__(self, color, size):
-        super().__init__(color, size)
+    def __init__(self, color):
+        super().__init__(color)
 
     def step(self, action):
         if action == 1:

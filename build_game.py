@@ -10,7 +10,7 @@ class AsciiMapException(Exception):
 class ObjectInfoException(Exception):
     pass
 
-def build_game(ascii_art, objs_info):
+def build_game(ascii_art, objs_info, obj_size):
     """
     Create the game object from ascii art and objects_information by
     creating difference layers, and pass it to the initilizer.
@@ -82,6 +82,10 @@ def build_game(ascii_art, objs_info):
     for y, row in enumerate(ascii_art):
         for x, obj in enumerate(row):
             if obj != ' ':
-                objs_lookup[(x, y)] = deepcopy(objs_info[obj])
+                obj_created = deepcopy(objs_info[obj])
+                obj_created.location = (x, y)
+                obj_created.size = obj_size
 
-    return game.Game(objs_lookup, objs_info, map_size)
+                objs_lookup[(x, y)] = obj_created
+
+    return game.Game(objs_lookup, map_size)

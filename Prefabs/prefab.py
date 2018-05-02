@@ -26,9 +26,10 @@ class Prefab(ABC):
         exceptions.NotInitalizedException-
             When we try to access the location without initalized it first.
     """
-    def __init__(self, color, size):
+    def __init__(self, color):
         self.color = color
-        self.size = size
+
+        self._size = None
         self._location = None
 
     @property
@@ -115,6 +116,8 @@ class Prefab(ABC):
     @property
     def size(self):
         """Getter method for the size"""
+        if self._size is None:
+            raise exceptions.NotInitalizedException("The size isn't initilized.")
         return self._size
 
     @size.setter
@@ -147,9 +150,9 @@ class Prefab(ABC):
         Return:
             numpy tile (size x size x 3 numpy array) - numpy tile
         """
-        one_pixel = np.array([c/255 for c in self._color])
-        tile_pixel = [[one_pixel for _ in range(self._size)]
-                                    for _ in range(self._size)]
+        one_pixel = np.array([c/255 for c in self.color])
+        tile_pixel = [[one_pixel for _ in range(self.size)]
+                                    for _ in range(self.size)]
         return np.array(tile_pixel, dtype=np.float32)
 
     def _display_tile(self):
