@@ -1,6 +1,6 @@
 # Just an nothing object, that can't walk path.
 
-from ..Prefabs import prefab
+from Prefabs import prefab
 from abc import ABC, abstractmethod
 
 class Static(prefab.Prefab):

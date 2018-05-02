@@ -3,7 +3,7 @@ from __future__ import division
 from __future__ import print_function
 
 import pytest
-from ..Prefabs import player, prefab, exceptions
+from Prefabs import player, prefab, exceptions
 
 import numpy as np
 

@@ -1,6 +1,6 @@
 # Player Prefab so that we can control it.
 # from Prefabs import player, prefab
-from ..Prefabs import prefab, player, exceptions
+from Prefabs import prefab, player, exceptions
 from abc import ABC, abstractmethod
 
 class Player(prefab.Prefab):
