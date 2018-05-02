@@ -6,7 +6,6 @@ import pytest
 from ..Prefabs import prefab
 
 import numpy as np
-import matplotlib.pyplot as plt
 
 @pytest.mark.parametrize("color_input, expect_msg", [
     ("Blue", "Expect 3 elements tuple - got str"),
@@ -36,6 +35,17 @@ def test_prefab_color_wrong_tuple_len(color_input, expect_msg):
 ])
 def test_prefab_color_wrong_type_tuple(color_input, expect_msg):
     with pytest.raises(TypeError) as execinfo:
+        p = prefab.Prefab(color_input, 10)
+
+    assert expect_msg in str(execinfo.value)
+
+@pytest.mark.parametrize("color_input, expect_msg", [
+    ((255, 255, -100), "Color can't be more than 255 or less than 0"),
+    ((255, 0, 256), "Color can't be more than 255 or less than 0"),
+    ((1, 260,-121), "Color can't be more than 255 or less than 0")
+])
+def test_prefab_color_wrong_type_tuple(color_input, expect_msg):
+    with pytest.raises(ValueError) as execinfo:
         p = prefab.Prefab(color_input, 10)
 
     assert expect_msg in str(execinfo.value)

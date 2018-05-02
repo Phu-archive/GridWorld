@@ -63,8 +63,8 @@ def build_game(ascii_art, objs_info):
     all_obs = list(set(itertools.chain.from_iterable(ascii_art)))
     all_obs = [o for o in all_obs if not o == ' ']
 
-    if not all_obs == list(objs_info.keys()):
-        if len(all_obs) < len(objs_info.keys()):
-            raise ObjectInfoException("Some of the objects are not in the map.")
+    if len(all_obs) < len(objs_info.keys()):
+        raise ObjectInfoException("Some of the objects are not in the map.")
 
+    if not all(o in objs_info for o in all_obs):
         raise ObjectInfoException("There is no information for the object.")

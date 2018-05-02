@@ -5,7 +5,7 @@ import numpy as np
 
 import matplotlib.pyplot as plt
 
-class Prefab(object):
+class Prefab(ABC):
     """
     Base Class for all prefabs(object) in the game.
 
@@ -41,6 +41,9 @@ class Prefab(object):
                 If the value is not a tuple.
                 If the size of the tuple is not 3.
                 If the tuple doesn't contain integer.
+
+            ValueError -
+                If the value is less than 0 or more than 255
         """
         if not isinstance(value, tuple):
             raise TypeError("Expect 3 elements tuple - got " +
@@ -49,8 +52,13 @@ class Prefab(object):
             if len(value) != 3:
                 raise TypeError("Expect 3 elements tuple - got " +
                                     str(len(value)) + " elements tuple.")
-            if not all(isinstance(c, int) for c in value):
+
+            elif not all(isinstance(c, int) for c in value):
                 raise TypeError("Expect 3 elements tuple of type int")
+
+            elif not all(0 <= c <= 255 for c in value):
+                raise ValueError("Color can't be more than 255 or less than 0")
+
 
         self._color = value
 
