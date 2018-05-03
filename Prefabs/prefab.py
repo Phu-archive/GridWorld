@@ -161,3 +161,10 @@ class Prefab(ABC):
         """
         plt.imshow(self.numpy_tile)
         plt.show()
+
+    def __eq__(self, other):
+        """This is how we compare 2 prefabs together."""
+        return type(other) == type(self) \
+            and other.color == self.color \
+            # and other.location == self.location \
+            # and other.size == self.size

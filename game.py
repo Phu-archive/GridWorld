@@ -3,6 +3,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from Prefabs import exceptions, player, static, interactive
+import warnings
+
 
 class Game(object):
     """
@@ -17,13 +19,178 @@ class Game(object):
         self.map_size = map_size
 
         # Just get the size of the object in the scene
-        self._obj_size = list(self.objs_lookup.items())[0][1].size
+        self._obj_size = list(self.objs_lookup.items())[0][1][0].size
 
         # Just create an object of the same size.
         _empty_tile = static.Static((255, 255, 255))
         _empty_tile.size = self._obj_size
 
         self.empty_tile_numpy = _empty_tile.numpy_tile
+
+    @property
+    def objs_lookup(self):
+        return self._objs_lookup
+
+    @objs_lookup.setter
+    def objs_lookup(self, value):
+        # Checking that there is no object missing - TODO - Not sure
+        # all_objs_new = set([sv for sv in v for _, v in value.items()])
+        # objs_new = set([sv for sv in v for _, v in self._objs_lookup])
+        #
+        # if objs_new != all_objs_new:
+        #     exceptions.ObjectMissingException("There is some object missing!!")
+
+        self._objs_lookup = value
+
+    @property
+    def list_players(self):
+        """Return list of players, guaruntee that I will not be None"""
+        return self._list_players
+
+    @list_players.setter
+    def list_players(self, value):
+        if len(value) == 0:
+            warnings.warn("There is no player in the game. You can't call step method")
+
+        for p in value:
+            p.game = self
+        self._list_players = value
+
+    def step(self, action):
+        """
+        Given an action what should we do ?
+        We just going to call the action of the players
+        For now, we will consider only single player first.
+
+        Args:
+            1. action(int) - the action for what player we want to act.
+
+        Return:
+            1. Observation (numpy image) - the observation of the map.
+            2. Reward (int) - TODO.
+        """
+        if len(self.list_players) > 1:
+            warnings.warn("There is more than one player - \
+                            Not supporting right now, might causes unwanted behavior.")
+
+        # Suppose p is 1 element list.
+        for player in self.list_players:
+            player.step(action)
+
+        return self.render_map()
+
+    def _move_player(self, player_location, next_location):
+        """
+        Given the plater location and its next location
+        change the lookup table and then return the next location
+
+        Args:
+            1. player_location (2 elements tuple) -
+                the current location of the player.
+            2. next_location (2 elements tuple) -
+                the next location we want to move the player to
+
+        Return
+            1. next location (2 element tuple)
+        """
+
+        location = player_location
+
+        # Update the lookup table.
+        # If there is nothing, then proceed the move.
+        if not next_location in self.objs_lookup:
+            player_obj = self.objs_lookup.pop(player_location)
+            self.objs_lookup[next_location] = player_obj
+            location = next_location
+
+        else:
+            # If next is the static - then you can't move.
+
+            # Warning - we car accessing just the first element.
+            if not isinstance(self.objs_lookup[next_location][0],
+                                    static.Static):
+                player_obj = self.objs_lookup.pop(player_location)
+                self.objs_lookup[next_location] = player_obj
+
+                location = next_location
+
+        print(next_location)
+        print(player_location)
+        print(location)
+
+        return location
+
+
+    def move_north(self, player_location):
+        """
+        Move the player to north direction.
+        And return the location of the player + update the lookup table.
+
+        Args:
+            1. player_location(tuple of 2 elements) -
+                the player location right now
+
+        Return:
+            1. player_new_location (tuple of 2 elements) -
+                the location of the player after it moves upward.
+        """
+
+        next_possible_location = (player_location[0], player_location[1]-1)
+        print("CAlled!!!!!!!!!!! north")
+        return self._move_player(player_location, next_possible_location)
+
+    def move_east(self, player_location):
+        """
+        Move the player to east direction.
+        And return the location of the player + update the lookup table.
+
+        Args:
+            1. player_location(tuple of 2 elements) -
+                the player location right now
+
+        Return:
+            1. player_new_location (tuple of 2 elements) -
+                the location of the player after it moves upward.
+        """
+
+        next_possible_location = (player_location[0]+1, player_location[1])
+        print("CAlled!!!!!!!!!!! east")
+        return self._move_player(player_location, next_possible_location)
+
+    def move_south(self, player_location):
+        """
+        Move the player to south direction.
+        And return the location of the player + update the lookup table.
+
+        Args:
+            1. player_location(tuple of 2 elements) -
+                the player location right now
+
+        Return:
+            1. player_new_location (tuple of 2 elements) -
+                the location of the player after it moves upward.
+        """
+
+        next_possible_location = (player_location[0], player_location[1]+1)
+        print("CAlled!!!!!!!!!!! south")
+        return self._move_player(player_location, next_possible_location)
+
+    def move_west(self, player_location):
+        """
+        Move the player to west direction.
+        And return the location of the player + update the lookup table.
+
+        Args:
+            1. player_location(tuple of 2 elements) -
+                the player location right now
+
+        Return:
+            1. player_new_location (tuple of 2 elements) -
+                the location of the player after it moves upward.
+        """
+        next_possible_location = (player_location[0]-1, player_location[1])
+        print("CAlled!!!!!!!!!!! west")
+        return self._move_player(player_location, next_possible_location)
 
     def render_map(self):
         """
@@ -39,7 +206,8 @@ class Game(object):
             row = []
             for y in range(size_y):
                 if (x, y) in self.objs_lookup:
-                    row.append(self.objs_lookup[(x,y)].numpy_tile)
+                    # Since we store it in list.
+                    row.append(self.objs_lookup[(x,y)][0].numpy_tile)
                 else:
                     row.append(self.empty_tile_numpy)
             # Have to reverse for the reshape to work.

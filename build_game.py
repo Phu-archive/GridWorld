@@ -1,5 +1,5 @@
 # Build a game representation from ascii art defined by user.
-from Prefabs import exceptions
+from Prefabs import exceptions, player
 import itertools
 from copy import deepcopy
 import game
@@ -78,6 +78,7 @@ def build_game(ascii_art, objs_info, obj_size):
 
     map_size = (len(ascii_art[0]), len(ascii_art))
     objs_lookup = dict()
+    player_list = []
 
     for y, row in enumerate(ascii_art):
         for x, obj in enumerate(row):
@@ -86,6 +87,11 @@ def build_game(ascii_art, objs_info, obj_size):
                 obj_created.location = (x, y)
                 obj_created.size = obj_size
 
-                objs_lookup[(x, y)] = obj_created
+                objs_lookup[(x, y)] = [obj_created]
 
-    return game.Game(objs_lookup, map_size)
+                if isinstance(objs_info[obj], player.Player):
+                    player_list.append(obj_created)
+
+    game_obj = game.Game(objs_lookup, map_size)
+    game_obj.list_players = player_list
+    return game_obj

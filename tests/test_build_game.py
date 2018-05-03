@@ -4,7 +4,7 @@ from __future__ import print_function
 
 from GridWorld import build_game
 import pytest
-from ..Prefabs import player, static
+from Prefabs import player, static
 
 ascii_art_test = ['####',
                   '# P#',
@@ -52,32 +52,48 @@ def test_too_much_information():
 
     assert expect_msg in str(excinfo.value)
 
+def test_warning_no_player():
+    expect_msg = "There is no player in the game. You can't call step method"
+    with pytest.warns(Warning) as record:
+        build_game.build_game(['    ', '  # '], {'#': static.Static((255, 0, 0))}, 2)
+
+    assert expect_msg in str(record[0].message)
+
+@pytest.mark.parametrize("size", [
+    (-1),
+    (0),
+    (-10)
+])
+def test_size_error(size):
+    expect_msg = "Expect size to be positive int"
+    with pytest.raises(ValueError) as excinfo:
+        build_game.build_game(ascii_art_test, obj_information_test, size)
+
+    assert expect_msg in str(excinfo.value)
+
 def test_finish_game():
     game = build_game.build_game(ascii_art_test, obj_information_test, 2)
 
     expected_objs_look_up = {
-        (0, 0): static.Static((0, 0, 0)),
-        (1, 0): static.Static((0, 0, 0)),
-        (2, 0): static.Static((0, 0, 0)),
-        (3, 0): static.Static((0, 0, 0)),
-
-        (0, 1): static.Static((0, 0, 0)),
-        (3, 1): static.Static((0, 0, 0)),
-
-        (0, 2): static.Static((0, 0, 0)),
-        (3, 2): static.Static((0, 0, 0)),
-
-        (0, 3): static.Static((0, 0, 0)),
-        (1, 3): static.Static((0, 0, 0)),
-        (2, 3): static.Static((0, 0, 0)),
-        (3, 3): static.Static((0, 0, 0)),
-
-        (2, 1): player.NormalPlayer((0, 255, 0))
+        (0, 0): [static.Static((0, 0, 0))],
+        (1, 0): [static.Static((0, 0, 0))],
+        (2, 0): [static.Static((0, 0, 0))],
+        (3, 0): [static.Static((0, 0, 0))],
+        (0, 1): [static.Static((0, 0, 0))],
+        (3, 1): [static.Static((0, 0, 0))],
+        (0, 2): [static.Static((0, 0, 0))],
+        (3, 2): [static.Static((0, 0, 0))],
+        (0, 3): [static.Static((0, 0, 0))],
+        (1, 3): [static.Static((0, 0, 0))],
+        (2, 3): [static.Static((0, 0, 0))],
+        (3, 3): [static.Static((0, 0, 0))],
+        (2, 1): [player.NormalPlayer((0, 255, 0))]
     }
 
     # Checking for types.
     assert len(game.objs_lookup.items()) == len(expected_objs_look_up.items())
-    assert all(type(l) is type(e)
-                for l, e in zip(game.objs_lookup.items(), expected_objs_look_up.items()))
+
+    # Some how this works
+    assert expected_objs_look_up == game.objs_lookup
 
     assert game.map_size == (4,4)
