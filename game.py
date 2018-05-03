@@ -120,7 +120,6 @@ class Game(object):
 
         return location
 
-
     def move_north(self, player_location):
         """
         Move the player to north direction.
@@ -136,7 +135,6 @@ class Game(object):
         """
 
         next_possible_location = (player_location[0], player_location[1]-1)
-        print("CAlled!!!!!!!!!!! north")
         return self._move_player(player_location, next_possible_location)
 
     def move_east(self, player_location):
@@ -154,7 +152,6 @@ class Game(object):
         """
 
         next_possible_location = (player_location[0]+1, player_location[1])
-        print("CAlled!!!!!!!!!!! east")
         return self._move_player(player_location, next_possible_location)
 
     def move_south(self, player_location):
@@ -172,7 +169,6 @@ class Game(object):
         """
 
         next_possible_location = (player_location[0], player_location[1]+1)
-        print("CAlled!!!!!!!!!!! south")
         return self._move_player(player_location, next_possible_location)
 
     def move_west(self, player_location):
@@ -189,7 +185,6 @@ class Game(object):
                 the location of the player after it moves upward.
         """
         next_possible_location = (player_location[0]-1, player_location[1])
-        print("CAlled!!!!!!!!!!! west")
         return self._move_player(player_location, next_possible_location)
 
     def render_map(self):
