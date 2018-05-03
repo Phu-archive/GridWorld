@@ -114,10 +114,6 @@ class Game(object):
 
                 location = next_location
 
-        print(next_location)
-        print(player_location)
-        print(location)
-
         return location
 
     def move_north(self, player_location):
