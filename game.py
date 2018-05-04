@@ -39,7 +39,7 @@ class Game(object):
         #
         # if objs_new != all_objs_new:
         #     exceptions.ObjectMissingException("There is some object missing!!")
-
+        
         self._objs_lookup = value
 
     @property
@@ -78,6 +78,24 @@ class Game(object):
             player.step(action)
 
         return self.render_map()
+    
+    def _change_player_pos(self, player_location, next_location):
+        """
+        This will change the position of the player no matter what
+
+        Args:
+            1. player_location (2 element tuple) - 
+                the current location of the player
+            2. next_location (2 element tuple) - 
+                the new location of the player.
+        """
+        
+        # First Remove the player at that location.
+        player_obj = self.objs_lookup.pop(player_location)
+
+        # Change it to the next location.
+        self.objs_lookup[next_location] = player_obj
+
 
     def _move_player(self, player_location, next_location):
         """
@@ -95,25 +113,35 @@ class Game(object):
         """
 
         location = player_location
-
+        
         # Update the lookup table.
         # If there is nothing, then proceed the move.
         if not next_location in self.objs_lookup:
-            player_obj = self.objs_lookup.pop(player_location)
-            self.objs_lookup[next_location] = player_obj
-            location = next_location
-
+            self._change_player_pos(player_location, next_location) 
+            location = next_location 
         else:
             # If next is the static - then you can't move.
 
             # Warning - we car accessing just the first element.
             if not isinstance(self.objs_lookup[next_location][0],
                                     static.Static):
+                
+                # get the content
                 player_obj = self.objs_lookup.pop(player_location)
-                self.objs_lookup[next_location] = player_obj
+                
+                next_object = self.objs_lookup[next_location][0]
 
+                print(next_object)
+                # just in case 
+                if isinstance(next_object, interactive.Interactive):
+                    print("YEH")
+                    next_object.touch(self)
+
+                content = self.objs_lookup[next_location]
+                content.append(player_obj)  
+                
                 location = next_location
-
+                
         return location
 
     def move_north(self, player_location):
@@ -197,7 +225,7 @@ class Game(object):
             row = []
             for y in range(size_y):
                 if (x, y) in self.objs_lookup:
-                    # Since we store it in list.
+                    # Since we store it in list. So display the first object first.
                     row.append(self.objs_lookup[(x,y)][0].numpy_tile)
                 else:
                     row.append(self.empty_tile_numpy)

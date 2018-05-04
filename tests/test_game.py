@@ -2,9 +2,8 @@ from GridWorld import game, build_game
 import numpy as np
 from Prefabs import *
 
-from Prefabs import player
-
 import pytest
+
 # Using the same game
 ascii_art_test = ['####',
                   '#  #',
@@ -20,6 +19,12 @@ ascii_art_test2 = ['########'
                   ,'#    A #'
                   ,'########']
 
+
+ascii_art_test3 = ['####',
+                   '# I#',
+                   '# P#',
+                   '####']
+
 obj_information_test = {
     'P': player.NormalPlayer((0, 0, 255)),
     '#': static.Static((0, 0, 0))
@@ -31,6 +36,14 @@ obj_information_test2 = {
     'A': static.Static((0, 255, 0))
 }
 
+
+obj_information_test3 = {
+    'P': player.NormalPlayer((0, 0, 255)),
+    '#': static.Static((0, 0, 0)),
+    'I': interactive.Touchable((255, 0, 0))  
+}
+
+        
 @pytest.fixture
 def big_game():
     return build_game.build_game(ascii_art_test2, obj_information_test2, 2)
@@ -81,10 +94,27 @@ def test_player_moving_big_map(action, expect_location, big_game):
     # Not sure why the dict comparison doesn't work here.
     # assert expected_objs_look_up == game.objs_lookup
 
-    big_game.display_map()
+    # big_game.display_map()
 
     # so just check that the location is in
     assert expect_location in big_game.objs_lookup
     assert isinstance(big_game.objs_lookup[expect_location][0], player.Player)
 
     assert obs.shape == (16, 16, 3)
+
+
+def test_player_moving_in_obj(capsys):
+   game = build_game.build_game(ascii_art_test3, obj_information_test3, 2)
+   game.step(1)
+
+   expect_loc = (2, 1)
+   assert expect_loc in game.objs_lookup
+
+   # Expect that the object lookup will have length 2.
+   assert len(game.objs_lookup[expect_loc]) == 2
+
+   # Test that the touch is called. 
+   out = capsys.readouterr()
+   # Since we copy every obj in the world we have to capture the touched instead
+   assert out == "I am touched"
+

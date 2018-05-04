@@ -9,3 +9,33 @@ class Interactive(prefab.Prefab):
     """
     def __init__(self, color):
         super().__init__(color)
+
+    @abstractmethod
+    def touch(self, env):
+        """
+        What will happend if the player touches this block?
+
+        Args:
+            env (game object) - the reference to the game object.
+        """
+        pass 
+
+    @abstractmethod
+    def consume(self, env):
+        """
+        What will happend if the player decides to consum the block ?
+        
+        Args:
+            env (game object) - the reference to the game object.
+        """
+        pass 
+
+class Touchable(Interactive):
+    def __init__(self, color):
+        super().__init__(color)
+
+    def touch(self, env):
+        print("I am Touched")
+
+    def consume(self, env):
+        print("Consumed")
