@@ -6,7 +6,8 @@ And easier to use ?
 ## Todo
 
 - [x] Simple Env with render and action
-- [ ] reward system
+- [x] reward system
+- [ ] reset env
 - [ ] moveable box
-- [ ] touchable box
+- [x] touchable box
 - [ ] Sokoban ?

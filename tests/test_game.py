@@ -25,6 +25,11 @@ ascii_art_test3 = ['####',
                    '# P#',
                    '####']
 
+ascii_art_test4 = ['####',
+                   '# E#',
+                   '# P#',
+                   '####']
+
 obj_information_test = {
     'P': player.NormalPlayer((0, 0, 255)),
     '#': static.Static((0, 0, 0))
@@ -43,16 +48,31 @@ obj_information_test3 = {
     'I': interactive.Touchable((255, 0, 0))  
 }
 
+obj_information_test4 = {
+    'P': player.NormalPlayer((0, 0, 255)),
+    '#': static.Static((0, 0, 0)),
+    'E': interactive.TouchableEnd((255, 0, 0))  
+}
+
         
 @pytest.fixture
 def big_game():
     return build_game.build_game(ascii_art_test2, obj_information_test2, 2)
 
 @pytest.fixture
-def game():
+def normal_game():
     return build_game.build_game(ascii_art_test, obj_information_test, 2)
 
-def test_render_map(game):
+@pytest.fixture
+def touch_game():
+    return build_game.build_game(ascii_art_test3, obj_information_test3, 2)
+
+@pytest.fixture
+def terminate_game():
+    return build_game.build_game(ascii_art_test4, obj_information_test4, 2)
+
+def test_render_map(normal_game):
+    game = normal_game
     img = game.render_map()
     # g.display_map()
 
@@ -65,8 +85,9 @@ def test_render_map(game):
     (4, (1, 2))
 ])
 
-def test_player_moving(action, expect_location, game):
-    obs, reward = game.step(action)
+def test_player_moving(action, expect_location, normal_game):
+    game = normal_game
+    obs, reward, terminate = game.step(action)
 
     # Checking for types.
     # Not sure why the dict comparison doesn't work here.
@@ -80,6 +101,7 @@ def test_player_moving(action, expect_location, game):
 
     assert obs.shape == (8, 8, 3)
     assert reward == 0
+    assert terminate == False
 
 @pytest.mark.parametrize("action, expect_location", [
     (1, (5, 4)),
@@ -89,7 +111,7 @@ def test_player_moving(action, expect_location, game):
 ])
 
 def test_player_moving_big_map(action, expect_location, big_game):
-    obs, reward = big_game.step(action)
+    obs, reward, terminate = big_game.step(action)
 
     # Checking for types.
     # Not sure why the dict comparison doesn't work here.
@@ -103,10 +125,11 @@ def test_player_moving_big_map(action, expect_location, big_game):
 
     assert obs.shape == (16, 16, 3)
     assert reward == 0
+    assert terminate == False
 
 
-def test_player_moving_in_obj(capsys):
-   game = build_game.build_game(ascii_art_test3, obj_information_test3, 2)
+def test_player_moving_in_obj(capsys, touch_game):
+   game = touch_game
    game.step(1)
 
    expect_loc = (2, 1)
@@ -120,8 +143,8 @@ def test_player_moving_in_obj(capsys):
    # Since we copy every obj in the world we have to capture the touched instead
    assert "I am Touched" in str(out)
 
-def test_player_moving_in_obj_out(capsys):
-   game = build_game.build_game(ascii_art_test3, obj_information_test3, 2)
+def test_player_moving_in_obj_out(capsys, touch_game):
+   game = touch_game
    game.step(1)
 
    expect_loc = (2, 1)
@@ -147,7 +170,8 @@ def test_player_moving_in_obj_out(capsys):
     None
 ])
 
-def test_reward(reward, game):
+def test_reward(reward, normal_game):
+    game = normal_game
     expect_msg = "The reward should be int, or float"
 
     with pytest.raises(TypeError) as excinfo:
@@ -155,9 +179,23 @@ def test_reward(reward, game):
 
     assert expect_msg in str(excinfo.value)
 
-def test_player_moving_in_obj_reward(capsys):
-   game = build_game.build_game(ascii_art_test3, obj_information_test3, 2)
-   observation, reward = game.step(1)
+@pytest.mark.parametrize("terminate", [
+    "1",
+    None,
+    1
+])
+def test_terminate(terminate, normal_game):
+    game = normal_game
+    expect_msg = "Termination should be boolean"
+
+    with pytest.raises(TypeError) as excinfo:
+        game.terminate = terminate
+
+    assert expect_msg in str(excinfo.value)
+
+def test_player_moving_in_obj_reward(capsys, touch_game):
+   game = touch_game
+   observation, reward, terminate = game.step(1)
 
    expect_loc = (2, 1)
    assert expect_loc in game.objs_lookup
@@ -170,3 +208,19 @@ def test_player_moving_in_obj_reward(capsys):
    # Since we copy every obj in the world we have to capture the touched instead
    assert "I am Touched" in str(out)
    assert reward == 1
+
+def test_player_touch_obj_terminate(capsys, terminate_game):
+    # Move Up
+    obs, reward, terminate = terminate_game.step(1)
+
+    # it should get reward and terminate
+    assert obs.shape == (8, 8, 3)
+    assert reward == 1
+    assert terminate
+    
+    # If we try to move up we should expect and error 
+    expect_answer = "The env is terminated."
+    with pytest.raises(exceptions.EnvTerminateException) as excinfo:
+        obs, reward, terminate = terminate_game.step(2)
+    assert expect_answer == str(excinfo.value)
+                

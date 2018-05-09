@@ -40,3 +40,15 @@ class Touchable(Interactive):
 
     def consume(self, env):
         print("Consumed")
+
+class TouchableEnd(Interactive):
+    def __init__(self, color):
+        super().__init__(color)
+
+    def touch(self, env):
+        print("I am Touched")
+        env.add_reward(1)
+        env.terminate_env()
+
+    def consume(self, env):
+        print("Consumed")

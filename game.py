@@ -26,6 +26,8 @@ class Game(object):
         _empty_tile.size = self._obj_size
 
         self.empty_tile_numpy = _empty_tile.numpy_tile
+        self.reward = 0
+        self.terminate = False
 
     @property
     def objs_lookup(self):
@@ -71,6 +73,16 @@ class Game(object):
 
         self._reward = value
     
+    @property
+    def terminate(self):
+        return self._terminate
+
+    @terminate.setter
+    def terminate(self, value):
+        if not isinstance(value, bool):
+            raise TypeError("Termination should be boolean")
+        self._terminate = value
+
     def add_reward(self, amount):
         """
         When we call this function add the total reward by the ammount
@@ -83,6 +95,12 @@ class Game(object):
         """
         self.reward += amount
 
+    def terminate_env(self):
+        """
+        Just mark the enviroment as termianted.
+        """
+        self.terminate = True
+    
     def step(self, action):
         """
         Given an action what should we do ?
@@ -96,6 +114,9 @@ class Game(object):
             1. Observation (numpy image) - the observation of the map.
             2. Reward (int) - TODO.
         """
+        if self.terminate:
+            raise exceptions.EnvTerminateException("The env is terminated.")
+
         if len(self.list_players) > 1:
             warnings.warn("There is more than one player - \
                             Not supporting right now, might causes unwanted behavior.")
@@ -106,7 +127,7 @@ class Game(object):
         for player in self.list_players:
             player.step(action)
 
-        return self.render_map(), self.reward
+        return self.render_map(), self.reward, self.terminate
     
     def _change_player_pos(self, player_location, next_location):
         """

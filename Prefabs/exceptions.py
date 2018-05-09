@@ -3,3 +3,6 @@ class NotInitalizedException(Exception):
 
 class ObjectMissingException(Exception):
     pass
+
+class EnvTerminateException(Exception):
+    pass
