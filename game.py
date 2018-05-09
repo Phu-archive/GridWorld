@@ -89,10 +89,17 @@ class Game(object):
             2. next_location (2 element tuple) - 
                 the new location of the player.
         """
-        
-        # First Remove the player at that location.
-        player_obj = self.objs_lookup.pop(player_location)
+        # We have to check that there aren't any overlap player
 
+        if len(self.objs_lookup[player_location]) < 2:
+            # First Remove the player at that location.
+            player_obj = self.objs_lookup.pop(player_location)
+
+        else:
+            # If there are more than one objects in the current location 
+            # Then we have to remore the last one which is the player. 
+            player_obj = self.objs_lookup[player_location].pop()
+            
         # Change it to the next location.
         self.objs_lookup[next_location] = player_obj
 
@@ -122,7 +129,7 @@ class Game(object):
         else:
             # If next is the static - then you can't move.
 
-            # Warning - we car accessing just the first element.
+            # Warning - we will accessing just the first element.
             if not isinstance(self.objs_lookup[next_location][0],
                                     static.Static):
                 
@@ -131,10 +138,8 @@ class Game(object):
                 
                 next_object = self.objs_lookup[next_location][0]
 
-                print(next_object)
                 # just in case 
                 if isinstance(next_object, interactive.Interactive):
-                    print("YEH")
                     next_object.touch(self)
 
                 content = self.objs_lookup[next_location]

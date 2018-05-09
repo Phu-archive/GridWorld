@@ -116,5 +116,27 @@ def test_player_moving_in_obj(capsys):
    # Test that the touch is called. 
    out = capsys.readouterr()
    # Since we copy every obj in the world we have to capture the touched instead
-   assert out == "I am touched"
+   assert "I am Touched" in str(out)
+
+def test_player_moving_in_obj_out(capsys):
+   game = build_game.build_game(ascii_art_test3, obj_information_test3, 2)
+   game.step(1)
+
+   expect_loc = (2, 1)
+   assert expect_loc in game.objs_lookup
+
+   # Expect that the object lookup will have length 2.
+   assert len(game.objs_lookup[expect_loc]) == 2
+
+   # Test that the touch is called. 
+   out = capsys.readouterr()
+   # Since we copy every obj in the world we have to capture the touched instead
+   assert "I am Touched" in str(out)
+   # Move out 
+   game.step(3)
+   new_expect_loc = (2, 2)
+   
+   assert new_expect_loc in game.objs_lookup
+   assert len(game.objs_lookup[new_expect_loc]) == 1
+   assert len(game.objs_lookup[expect_loc]) == 1
 
