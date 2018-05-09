@@ -66,7 +66,7 @@ def test_render_map(game):
 ])
 
 def test_player_moving(action, expect_location, game):
-    obs = game.step(action)
+    obs, reward = game.step(action)
 
     # Checking for types.
     # Not sure why the dict comparison doesn't work here.
@@ -79,6 +79,7 @@ def test_player_moving(action, expect_location, game):
     assert isinstance(game.objs_lookup[expect_location][0], player.Player)
 
     assert obs.shape == (8, 8, 3)
+    assert reward == 0
 
 @pytest.mark.parametrize("action, expect_location", [
     (1, (5, 4)),
@@ -88,7 +89,7 @@ def test_player_moving(action, expect_location, game):
 ])
 
 def test_player_moving_big_map(action, expect_location, big_game):
-    obs = big_game.step(action)
+    obs, reward = big_game.step(action)
 
     # Checking for types.
     # Not sure why the dict comparison doesn't work here.
@@ -101,6 +102,7 @@ def test_player_moving_big_map(action, expect_location, big_game):
     assert isinstance(big_game.objs_lookup[expect_location][0], player.Player)
 
     assert obs.shape == (16, 16, 3)
+    assert reward == 0
 
 
 def test_player_moving_in_obj(capsys):
@@ -140,3 +142,31 @@ def test_player_moving_in_obj_out(capsys):
    assert len(game.objs_lookup[new_expect_loc]) == 1
    assert len(game.objs_lookup[expect_loc]) == 1
 
+@pytest.mark.parametrize("reward", [
+    "1",
+    None
+])
+
+def test_reward(reward, game):
+    expect_msg = "The reward should be int, or float"
+
+    with pytest.raises(TypeError) as excinfo:
+        game.reward = reward
+
+    assert expect_msg in str(excinfo.value)
+
+def test_player_moving_in_obj_reward(capsys):
+   game = build_game.build_game(ascii_art_test3, obj_information_test3, 2)
+   observation, reward = game.step(1)
+
+   expect_loc = (2, 1)
+   assert expect_loc in game.objs_lookup
+
+   # Expect that the object lookup will have length 2.
+   assert len(game.objs_lookup[expect_loc]) == 2
+
+   # Test that the touch is called. 
+   out = capsys.readouterr()
+   # Since we copy every obj in the world we have to capture the touched instead
+   assert "I am Touched" in str(out)
+   assert reward == 1

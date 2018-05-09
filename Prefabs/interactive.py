@@ -36,6 +36,7 @@ class Touchable(Interactive):
 
     def touch(self, env):
         print("I am Touched")
+        env.add_reward(1)
 
     def consume(self, env):
         print("Consumed")

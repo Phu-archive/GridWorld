@@ -55,6 +55,33 @@ class Game(object):
         for p in value:
             p.game = self
         self._list_players = value
+    
+    @property
+    def reward(self):
+        """The reward of the player right now"""
+        return self._reward
+
+    @reward.setter
+    def reward(self, value):
+        """Setting up the reward"""
+
+        # Check for the conditions 
+        if not isinstance(value, int) and not isinstance(value, float):
+            raise TypeError("The reward should be int, or float")
+
+        self._reward = value
+    
+    def add_reward(self, amount):
+        """
+        When we call this function add the total reward by the ammount
+
+        Args:
+            1. amount (int) - the amount of the reward we have to add 
+
+        Raises:
+            TypeError - if the amount is not int or float.
+        """
+        self.reward += amount
 
     def step(self, action):
         """
@@ -72,12 +99,14 @@ class Game(object):
         if len(self.list_players) > 1:
             warnings.warn("There is more than one player - \
                             Not supporting right now, might causes unwanted behavior.")
+        # Everytime the step is called we are going to reset the reward 
+        self.reward = 0
 
         # Suppose p is 1 element list.
         for player in self.list_players:
             player.step(action)
 
-        return self.render_map()
+        return self.render_map(), self.reward
     
     def _change_player_pos(self, player_location, next_location):
         """
