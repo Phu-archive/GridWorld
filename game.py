@@ -4,6 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from Prefabs import exceptions, player, static, interactive
 import warnings
+import copy
 
 
 class Game(object):
@@ -29,6 +30,12 @@ class Game(object):
         self.reward = 0
         self.terminate = False
 
+        # For reset the game - safe the start state
+        self._start_state = copy.deepcopy(self.objs_lookup)
+        
+        # just to init everything 
+        self.list_players
+
     @property
     def objs_lookup(self):
         return self._objs_lookup
@@ -47,17 +54,21 @@ class Game(object):
     @property
     def list_players(self):
         """Return list of players, guaruntee that I will not be None"""
-        return self._list_players
+        
+        players = []
+        for key, value in self.objs_lookup.items():
+            for v in value: 
+                if isinstance(v, player.Player):
+                    players.append(v)
 
-    @list_players.setter
-    def list_players(self, value):
-        if len(value) == 0:
+        if len(players) == 0:
             warnings.warn("There is no player in the game. You can't call step method")
-
-        for p in value:
+        
+        for p in players:
             p.game = self
-        self._list_players = value
-    
+
+        return players
+ 
     @property
     def reward(self):
         """The reward of the player right now"""
@@ -144,14 +155,15 @@ class Game(object):
         if len(self.objs_lookup[player_location]) < 2:
             # First Remove the player at that location.
             player_obj = self.objs_lookup.pop(player_location)
+            self.objs_lookup[next_location] = player_obj
 
         else:
             # If there are more than one objects in the current location 
             # Then we have to remore the last one which is the player. 
             player_obj = self.objs_lookup[player_location].pop()
+            self.objs_lookup[next_location] = [player_obj]
             
         # Change it to the next location.
-        self.objs_lookup[next_location] = player_obj
 
 
     def _move_player(self, player_location, next_location):
@@ -184,7 +196,7 @@ class Game(object):
                                     static.Static):
                 
                 # get the content
-                player_obj = self.objs_lookup.pop(player_location)
+                player_obj = self.objs_lookup.pop(player_location)[0]
                 
                 next_object = self.objs_lookup[next_location][0]
 
@@ -212,7 +224,7 @@ class Game(object):
             1. player_new_location (tuple of 2 elements) -
                 the location of the player after it moves upward.
         """
-
+        print("At location - ", player_location)
         next_possible_location = (player_location[0], player_location[1]-1)
         return self._move_player(player_location, next_possible_location)
 
@@ -302,3 +314,17 @@ class Game(object):
         """
         plt.imshow(self.render_map())
         plt.show()
+
+    def reset(self):
+        """
+        Reset Everything.
+
+        Warns:
+            If the game is not terminated, we shoud warn the user, first
+        """
+        if not self.terminate:
+            warnings.warn("The game hasn't terminated.")
+        self.objs_lookup = self._start_state
+
+        # After reset it is not terminated
+        self.terminate = False

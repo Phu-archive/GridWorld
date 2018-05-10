@@ -89,9 +89,5 @@ def build_game(ascii_art, objs_info, obj_size):
 
                 objs_lookup[(x, y)] = [obj_created]
 
-                if isinstance(objs_info[obj], player.Player):
-                    player_list.append(obj_created)
-
     game_obj = game.Game(objs_lookup, map_size)
-    game_obj.list_players = player_list
     return game_obj

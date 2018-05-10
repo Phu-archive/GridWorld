@@ -7,7 +7,7 @@ And easier to use ?
 
 - [x] Simple Env with render and action
 - [x] reward system
-- [ ] reset env
+- [x] reset env
 - [ ] moveable box
 - [x] touchable box
 - [ ] Sokoban ?

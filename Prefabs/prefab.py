@@ -43,7 +43,7 @@ class Prefab(ABC):
         """
         if self._location is None:
             raise exceptions.NotInitalizedException("Location haven't been initilized")
-
+        
         return self._location
 
     @location.setter
@@ -70,7 +70,7 @@ class Prefab(ABC):
                                     str(len(value)) + " elements tuple.")
             elif not all(isinstance(c, int) for c in value):
                 raise TypeError("Expect 2 elements tuple of type int")
-
+        
         self._location = value
 
 

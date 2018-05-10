@@ -52,6 +52,7 @@ class Player(prefab.Prefab):
             raise exceptions.NotInitalizedException("Game haven't been initilized")
 
         # Get the next location after moving to the north.
+        print(self)
         self.location = self.game.move_north(self.location)
 
     def _east(self):

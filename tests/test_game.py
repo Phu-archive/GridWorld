@@ -223,4 +223,51 @@ def test_player_touch_obj_terminate(capsys, terminate_game):
     with pytest.raises(exceptions.EnvTerminateException) as excinfo:
         obs, reward, terminate = terminate_game.step(2)
     assert expect_answer == str(excinfo.value)
-                
+
+def test_game_reset(normal_game):
+    before_reset = normal_game.render_map()
+
+    # testing for the reset of the normal game 
+    obs, reward, terminate = normal_game.step(1)
+    after_move = obs
+    assert not np.array_equal(before_reset, obs) 
+
+    # Warning msg
+    expect_msg = "The game hasn't terminated."
+
+    # After the move try reset the game
+    with pytest.warns(UserWarning) as record:
+        normal_game.reset()
+
+    assert str(record[0].message) == expect_msg
+    assert np.array_equal(before_reset, normal_game.render_map())
+
+    obs, reward, terminate = normal_game.step(1)
+    assert obs.shape == (8, 8, 3)
+    assert np.array_equal(after_move, obs)
+    assert reward == 0
+    assert not terminate
+
+def test_game_reset_no_warning(terminate_game):
+    before_reset = terminate_game.render_map()
+
+    # testing for the reset of the normal game 
+    obs, reward, terminate = terminate_game.step(1)
+    after_move = obs
+    assert not np.array_equal(before_reset, obs) 
+    assert reward == 1
+
+    # After the move try reset the game
+    with pytest.warns(None) as record:
+        terminate_game.reset()
+    
+    # Should be no warning
+    assert len(record) == 0
+    assert np.array_equal(before_reset, terminate_game.render_map())
+
+    # Everything should work normally
+    obs, reward, terminate = terminate_game.step(1)
+    assert obs.shape == (8, 8, 3)
+    assert np.array_equal(after_move, obs)
+    assert reward == 1
+    assert terminate
