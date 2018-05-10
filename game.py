@@ -34,7 +34,7 @@ class Game(object):
         self._start_state = copy.deepcopy(self.objs_lookup)
         
         # just to init everything 
-        self.list_players
+        self._list_players = self.get_list_players()
 
     @property
     def objs_lookup(self):
@@ -51,8 +51,7 @@ class Game(object):
         
         self._objs_lookup = value
 
-    @property
-    def list_players(self):
+    def get_list_players(self):
         """Return list of players, guaruntee that I will not be None"""
         
         players = []
@@ -128,14 +127,14 @@ class Game(object):
         if self.terminate:
             raise exceptions.EnvTerminateException("The env is terminated.")
 
-        if len(self.list_players) > 1:
+        if len(self._list_players) > 1:
             warnings.warn("There is more than one player - \
                             Not supporting right now, might causes unwanted behavior.")
         # Everytime the step is called we are going to reset the reward 
         self.reward = 0
 
         # Suppose p is 1 element list.
-        for player in self.list_players:
+        for player in self._list_players:
             player.step(action)
 
         return self.render_map(), self.reward, self.terminate
@@ -224,7 +223,6 @@ class Game(object):
             1. player_new_location (tuple of 2 elements) -
                 the location of the player after it moves upward.
         """
-        print("At location - ", player_location)
         next_possible_location = (player_location[0], player_location[1]-1)
         return self._move_player(player_location, next_possible_location)
 
@@ -328,3 +326,4 @@ class Game(object):
 
         # After reset it is not terminated
         self.terminate = False
+        self._list_players = self.get_list_players()
