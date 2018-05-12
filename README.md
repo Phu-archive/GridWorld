@@ -94,4 +94,4 @@ env.display_map()
 So when player touch the object I, it get rewards 100.
 and then move down again, noted that the reward block doesn't get destroyed (Next feature)
 
-![Alt Text](pics/simple_grid_animation.gif)
+![Alt Text](pics/simple_grid_animation.gif )
