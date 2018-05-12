@@ -316,14 +316,19 @@ class Game(object):
     def reset(self):
         """
         Reset Everything.
-
+        
+        Return:
+            The first scene
+        
         Warns:
             If the game is not terminated, we shoud warn the user, first
         """
         if not self.terminate:
-            warnings.warn("The game hasn't terminated.")
+            warnings.warn("The game hasn't terminated for reset")
         self.objs_lookup = self._start_state
 
         # After reset it is not terminated
         self.terminate = False
         self._list_players = self.get_list_players()
+
+        return self.render_map() 

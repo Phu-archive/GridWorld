@@ -233,7 +233,7 @@ def test_game_reset(normal_game):
     assert not np.array_equal(before_reset, obs) 
 
     # Warning msg
-    expect_msg = "The game hasn't terminated."
+    expect_msg = "The game hasn't terminated for reset"
 
     # After the move try reset the game
     with pytest.warns(UserWarning) as record:
