@@ -1,6 +1,6 @@
 from GridWorld import game, build_game
 import numpy as np
-from Prefabs import *
+from GridWorld.Prefabs import *
 
 import pytest
 

@@ -1,6 +1,6 @@
 # Interactive Class.
 
-from Prefabs import prefab
+from GridWorld.Prefabs import prefab
 from abc import ABC, abstractmethod
 
 class Interactive(prefab.Prefab):

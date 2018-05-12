@@ -2,7 +2,7 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
-from Prefabs import exceptions, player, static, interactive
+from GridWorld.Prefabs import exceptions, player, static, interactive
 import warnings
 import copy
 

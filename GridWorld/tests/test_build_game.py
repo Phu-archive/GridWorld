@@ -4,7 +4,7 @@ from __future__ import print_function
 
 from GridWorld import build_game
 import pytest
-from Prefabs import player, static
+from GridWorld.Prefabs import player, static
 
 ascii_art_test = ['####',
                   '# P#',

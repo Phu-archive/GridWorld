@@ -3,7 +3,7 @@ from __future__ import division
 from __future__ import print_function
 
 import pytest
-from Prefabs import prefab, exceptions
+from GridWorld.Prefabs import prefab, exceptions
 
 import numpy as np
 

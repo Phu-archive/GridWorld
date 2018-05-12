@@ -1,8 +1,8 @@
 # Build a game representation from ascii art defined by user.
-from Prefabs import exceptions, player
+from GridWorld.Prefabs import exceptions, player
 import itertools
 from copy import deepcopy
-import game
+import GridWorld.game as game
 
 class AsciiMapException(Exception):
     pass
